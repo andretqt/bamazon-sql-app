@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
     user: 'root',
     password: 'motdepasse',
     database: 'bamazonDB'
-})
+});
 
 connection.connect(function(err, res){
     if (err) throw err;
@@ -36,12 +36,19 @@ connection.connect(function(err, res){
         var id = answer.id;
         var units = answer.units;
         connection.query(`SELECT * FROM products WHERE item_id = '${id}'`,function(error, qres){
-            if (error) throw error;
+            if (error) throw error; 
             if (units > qres[0].stock_quantity){
                 console.log('Insuficient quantity!')
+            } else {
+                console.log(units * qres[0].price);
+                //update the products table
+                //Luckily there's an UPDATE command in mysql
+                updateQuery = `UPDATE products SET stock_quantity = stock_quantity - ${units} WHERE item_id = ${id}`
+                connection.query(updateQuery, function(error, ures) {
+                    if (error) throw error;
+                    connection.end();
+                });
             }
-            console.log('connection ending rn =====');
-            connection.end();
         })
     });
 
