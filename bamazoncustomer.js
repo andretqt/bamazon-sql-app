@@ -11,18 +11,20 @@ var connection = mysql.createConnection({
     password: 'motdepasse',
     database: 'bamazonDB'
 });
-
+//i wanna display what we got in store before promp
 connection.connect(function(err, res){
+    //1=====================
     if (err) throw err;
     connection.query('SELECT item_id, product_name, price FROM products', function(err, res) {
         if (err) throw err;
         //work on displaying answer more meaningfully
         res.forEach(row => {
-            var rowDisplay = (`id: ${row.item_id} name: ${row.product_name} price: ${row.price}`);
-            // console.log(rowDisplay);
+            var rowDisplay = (`id: ${row.item_id} || name: ${row.product_name} || price: ${row.price}`);
+            console.log(rowDisplay);
         });
+        
     })
- 
+    //2======================
     //when customer starts his command
     inquirer.prompt([{
         name: "id",
@@ -40,7 +42,7 @@ connection.connect(function(err, res){
             if (units > qres[0].stock_quantity){
                 console.log('Insuficient quantity!')
             } else {
-                console.log(units * qres[0].price);
+                console.log('Your purchase total adds up to $'+ units * qres[0].price + ' dollars.');
                 //update the products table
                 //Luckily there's an UPDATE command in mysql
                 updateQuery = `UPDATE products SET stock_quantity = stock_quantity - ${units} WHERE item_id = ${id}`
@@ -53,5 +55,5 @@ connection.connect(function(err, res){
     });
 
 });
-///our shit works
+///our code works for the basic commands
 //user has to pick an id and also a quantity 
