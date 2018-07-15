@@ -41,6 +41,7 @@ connection.connect(function(err, res){
             if (error) throw error; 
             if (units > qres[0].stock_quantity){
                 console.log('Insuficient quantity!')
+                connection.end();
             } else {
                 console.log('Your purchase total adds up to $'+ units * qres[0].price + ' dollars.');
                 //update the products table
