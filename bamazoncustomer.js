@@ -21,8 +21,7 @@ connection.connect(function(err, res){
         res.forEach(row => {
             var rowDisplay = (`id: ${row.item_id} || name: ${row.product_name} || price: ${row.price}`);
             console.log(rowDisplay);
-        });
-        
+        });        
     })
     //2======================
     //when customer starts his command
