@@ -19,7 +19,7 @@ connection.connect(function(err, res){
         if (err) throw err;
         //work on displaying answer more meaningfully
         res.forEach(row => {
-            var rowDisplay = (`id: ${row.item_id} || name: ${row.product_name} || price: ${row.price}`);
+            var rowDisplay = `id: ${row.item_id} || name: ${row.product_name} || price: ${row.price}`;
             console.log(rowDisplay);
         });        
     })
