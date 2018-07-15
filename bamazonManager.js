@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
 });
 //first we gotta display what options the user got
 inquirer.prompt([{
-    message: 'These are your options:\n1. View Products for Sale\n2. View Low Inventory\n3. Add to Inventory\n4.Add New Product\nEnter number of action you would like to proceed with: ',
+    message: 'These are your options:\n1. View Products for Sale\n2. View Low Inventory\n3. Add to Inventory\n4. Add New Product\nEnter number of action you would like to proceed with: ',
     name: 'choice'
 }]).then(function(answer){
     if (answer.choice === '1') {
@@ -33,16 +33,7 @@ inquirer.prompt([{
                 console.log(rowDisplay);
             });
         });
-    } else if (answer.choice === '3') {
-        //add an item to inventory
-        //id should be automatic based on length of table
-        // function newItem(item_id, product_name, department_name, price, stock_quantity) {
-        //     this.item_id = item_id,
-        //     this.product_name = product_name,
-        //     this.department_name = department_name,
-        //     this.price = price,
-        //     this.stock_quantity = stock_quantity
-        // }
+    } else if (answer.choice === '4') {
         console.log('You have to specify your item details');
         connection.query(`SELECT COUNT (item_id) FROM products`,function(err, res){
             if (err) throw err;
@@ -73,15 +64,32 @@ inquirer.prompt([{
                 answer.quantity = Number(answer.quantity);
                 connection.query(`INSERT INTO products (item_id, product_name, department_name, price, stock_quantity) VALUES(${Number(dbLength) + 1}, '${answer.prodname}', '${answer.depname}', ${answer.price}, ${answer.quantity})`,function(err, res){
                     if (err) throw err;
-                    console.log('item added to inventory');
+                    console.log('Product added to the story');
                     connection.end();
                 });
             });
-    } else if (answer.choice === '4') {
-        console.log('fourth option chosen');
+    } else if (answer.choice === '3') {
+        //add more of an item to the store
+        console.log('third option chosen');
+        inquirer.prompt([{
+            message: 'Enter the id of the item you wish to increase stock quantity',
+            name: 'id_'
+        },
+        {
+            message: 'How many more units should we order',
+            name: 'units'
+        }]).then(function(answer){
+            answer.id_ = Number(answer.id_);
+            answer.units = Number(answer.units);
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answer.units} WHERE item_id = ${answer.id_}`, function(err, res) {
+                if (err) throw err;
+                console.log('Item added to inventory');
+            });
+            connection.end();
+        });
+        
     } else {
         console.log('Choose a valid number please');
     }
-
 });
 
