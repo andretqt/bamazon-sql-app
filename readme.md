@@ -2,3 +2,6 @@ bamazon is a node js application that reflects access the content of a Store inv
 The app does two things:
 1) shows to the user (via the console) what's in store.
 2) takes input from user (item_id and units to be purchased), then using the input, the total amount due by the user is logged in the console, and the stock quantity if the item is updated in the products table.
+
+Improvements needed: 
+due to the asynchronous nature of the javascript language, user prompt is logged at the same time as the products table. Ideally the table should be shown first, then prompt the user.
