@@ -14,7 +14,6 @@ inquirer.prompt([{
     name: 'choice'
 }]).then(function(answer){
     if (answer.choice === '1') {
-        console.log('first option chosen - display what is for sale (stock quantity over 0');
         var queryOne = `SELECT item_id, product_name, price, stock_quantity FROM products`  //item IDs, names, prices, and quantities
         connection.query(queryOne, function(err, res){
             if (err) throw err;
@@ -32,6 +31,7 @@ inquirer.prompt([{
                 var rowDisplay = `id: ${row.item_id} | name: ${row.product_name} | price: ${row.price} | quantity: ${row.stock_quantity}`;
                 console.log(rowDisplay);
             });
+            connection.end();
         });
     } else if (answer.choice === '4') {
         console.log('You have to specify your item details');
