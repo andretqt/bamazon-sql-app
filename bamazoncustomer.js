@@ -21,9 +21,7 @@ connection.connect(function(err, res){
         if (err) throw err;
         //work on displaying answer more meaningfully
         console.log(consoleTable.getTable(res));
-        connection.end();
-
-    });
+    })
     //2======================
     //when customer starts his command
     inquirer.prompt([{
