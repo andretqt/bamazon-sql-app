@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var consoleTable = require('console.table');
 //connect to our DB
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -14,14 +15,12 @@ inquirer.prompt([{
     name: 'choice'
 }]).then(function(answer){
     if (answer.choice === '1') {
-        var queryOne = `SELECT item_id, product_name, price, stock_quantity FROM products`  //item IDs, names, prices, and quantities
+        var queryOne = `SELECT item_id, product_name, price, stock_quantity FROM products`;
         connection.query(queryOne, function(err, res){
             if (err) throw err;
-            res.forEach(row => {
-                var rowDisplay = `id: ${row.item_id} | name: ${row.product_name} | price: ${row.price} | quantity: ${row.stock_quantity}`;
-                console.log(rowDisplay);
-            });
+            console.log(consoleTable.getTable(res));
             connection.end();
+            
         });
     } else if (answer.choice === '2') {
         //display item with a stock quantity less than 5
@@ -62,9 +61,9 @@ inquirer.prompt([{
                 answer.depname = answer.depname.toUpperCase();
                 answer.price = Number(answer.price);
                 answer.quantity = Number(answer.quantity);
-                connection.query(`INSERT INTO products (item_id, product_name, department_name, price, stock_quantity) VALUES(${Number(dbLength) + 1}, '${answer.prodname}', '${answer.depname}', ${answer.price}, ${answer.quantity})`,function(err, res){
+                connection.query(`INSERT INTO products (item_id, product_name, department_name, price, stock_quantity, product_sales) VALUES(${Number(dbLength) + 1}, '${answer.prodname}', '${answer.depname}', ${answer.price}, ${answer.quantity}, 0)`,function(err, res){
                     if (err) throw err;
-                    console.log('Product added to the story');
+                    console.log('Product added to the store');
                     connection.end();
                 });
             });

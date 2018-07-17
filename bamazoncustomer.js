@@ -1,6 +1,8 @@
 //loading ==== our === packages
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var consoleTable = require('console.table');
+
 // console.log(inquirer); // a way to check what's in the inquirer pkg (methods and properties)
 //========
 
@@ -18,11 +20,10 @@ connection.connect(function(err, res){
     connection.query('SELECT item_id, product_name, price FROM products', function(err, res) {
         if (err) throw err;
         //work on displaying answer more meaningfully
-        res.forEach(row => {
-            var rowDisplay = `id: ${row.item_id} || name: ${row.product_name} || price: ${row.price}`;
-            console.log(rowDisplay);
-        });        
-    })
+        console.log(consoleTable.getTable(res));
+        connection.end();
+
+    });
     //2======================
     //when customer starts his command
     inquirer.prompt([{
@@ -39,16 +40,22 @@ connection.connect(function(err, res){
         connection.query(`SELECT * FROM products WHERE item_id = '${id}'`,function(error, qres){
             if (error) throw error; 
             if (units > qres[0].stock_quantity){
-                console.log('Insuficient quantity!')
+                console.log('Insufficient quantity!')
                 connection.end();
             } else {
-                console.log('Your purchase total adds up to $'+ units * qres[0].price + ' dollars.');
+                var purchaseTotal = units * qres[0].price;
+                console.log('Your purchase total adds up to $'+ purchaseTotal + ' dollars.');
                 //update the products table
                 //Luckily there's an UPDATE command in mysql
-                updateQuery = `UPDATE products SET stock_quantity = stock_quantity - ${units} WHERE item_id = ${id}`
-                connection.query(updateQuery, function(error, ures) {
+                //also UPDATE product_sales column in departments table
+                var firstUpdateQuery = `UPDATE products SET stock_quantity = stock_quantity - ${units}, product_sales = product_sales + ${purchaseTotal} WHERE item_id = ${id}`;
+                var secondUpdateQuery = `UPDATE bamazonDB.departments SET product_sales = product_sales + ${purchaseTotal} WHERE department_name = '${qres[0].department_name}'`;
+                connection.query(firstUpdateQuery, function(error, ures) {
                     if (error) throw error;
-                    connection.end();
+                    connection.query(secondUpdateQuery, function(err, ures){
+                        if (err) throw err;
+                        connection.end();
+                    });
                 });
             }
         })
